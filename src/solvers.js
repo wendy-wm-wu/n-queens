@@ -38,74 +38,113 @@ window.findNRooksSolution = function(n) {
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
+  // let solutionCount = 0;
+  // //create instance of Board
+  // //define empty array for boardStorage
+  // let boardStorage = [new Board({'n':n}).rows()];
+  // //create helper function
+  // let helperFunctionRunCount = 0;
+  // let helper = () => {
+  //   let tempBoardStorage = [];
+  //   //loop thru every board in boardstorage
+  //   for (let i = 0; i < boardStorage.length; i++) {
+  //     let lastPieceRow = 0;
+  //     //loop thru each row
+  //     for (let j = boardStorage[i].length - 1; j >= 0; j--) {
+  //       if (boardStorage[i][j].includes(1)) {
+  //         lastPieceRow = j + 1;
+  //         break;
+  //       }
+  //     }
+  //     if (helperFunctionRunCount === 3 && tempBoardStorage.length === 23) {
+  //       debugger;
+  //     }
+  //     for (let j = lastPieceRow; j < boardStorage[i].length; j++) {
+  //       //for each row, loop thru its indices
+  //       for (let k = 0; k < boardStorage[i][j].length; k++) {
+  //         if (boardStorage[i][j][k] !== 1) {
+  //           //togglePiece (place piece)
+  //           boardStorage[i][j][k] = 1;
+  //           //push board to boardStorage
+  //           //make deep copy of array
+  //           let arrayCopy = JSON.parse(JSON.stringify(boardStorage[i]));
+  //           //store new board made from deep copied array
+  //           let newBoard = new Board(arrayCopy);
+  //           //if rowCon & colCon of new board are false
+  //           // if (n === 3 && tempBoardStorage.length === 8) {
+  //           //   debugger;
+  //           // }
+  //           if (!newBoard.hasAnyRowConflicts() && !newBoard.hasAnyColConflicts()) {
+  //             //push new board to tempstorage
+  //             tempBoardStorage.push(arrayCopy);
+  //           }
+  //           //togglePiece (take off piece)
+  //           boardStorage[i][j][k] = 0;
+  //         }
+  //       }
+  //     }
+  //   }
+  //   boardStorage = tempBoardStorage;
+  //   // while # of rooks less than n
+  //   // while (helperFunctionRunCount < n) {
+  //   //   //and run helper recursively
+  //   //   helper();
+  //   // }
+  //   helperFunctionRunCount++;
+  // };
+  // //call helper outside
+  // while (helperFunctionRunCount < n) {
+  //   helper();
+  // }
+  // solutionCount = boardStorage.length;
+  // // let uniqueSolutions = [];
+  // // for (let i = 0; i < boardStorage.length; i++) {
+  // //   if (!(uniqueSolutions.includes(JSON.stringify(boardStorage[i])))) {
+  // //     uniqueSolutions.push(JSON.stringify(boardStorage[i]));
+  // //   }
+  // // }
+  // // solutionCount = uniqueSolutions.length;
+  // console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
+  // return solutionCount;
+
   let solutionCount = 0;
-  //create instance of Board
-  //define empty array for boardStorage
-  let boardStorage = [new Board({'n':n}).rows()];
-  //create helper function
-  let helperFunctionRunCount = 0;
-  let helper = () => {
-    let tempBoardStorage = [];
-    //loop thru every board in boardstorage
-    for (let i = 0; i < boardStorage.length; i++) {
-      let lastPieceRow = 0;
-      //loop thru each row
-      for (let j = boardStorage[i].length - 1; j >= 0; j--) {
-        if (boardStorage[i][j].includes(1)) {
-          lastPieceRow = j + 1;
-          break;
-        }
+  let helper = board => {
+    debugger;
+    let numberOfRooks = 0;
+    for (let i = 0; i < board.rows().length; i++) {
+      if (board.rows()[i].includes(1)) {
+        numberOfRooks++;
       }
-      if (helperFunctionRunCount === 3 && tempBoardStorage.length === 23) {
-        debugger;
+    }
+    if (numberOfRooks === n) {
+      solutionCount++;
+      return;
+    }
+    let lastPieceRow = 0;
+    for (let i = board.rows().length - 1; i >= 0; i--) {
+      if (board.rows()[i].includes(1)) {
+        lastPieceRow = i + 1;
+        break;
       }
-      for (let j = lastPieceRow; j < boardStorage[i].length; j++) {
-        //for each row, loop thru its indices
-        for (let k = 0; k < boardStorage[i][j].length; k++) {
-          if (boardStorage[i][j][k] !== 1) {
-            //togglePiece (place piece)
-            boardStorage[i][j][k] = 1;
-            //push board to boardStorage
-            //make deep copy of array
-            let arrayCopy = JSON.parse(JSON.stringify(boardStorage[i]));
-            //store new board made from deep copied array
-            let newBoard = new Board(arrayCopy);
-            //if rowCon & colCon of new board are false
-            // if (n === 3 && tempBoardStorage.length === 8) {
-            //   debugger;
-            // }
-            if (!newBoard.hasAnyRowConflicts() && !newBoard.hasAnyColConflicts()) {
-              //push new board to tempstorage
-              tempBoardStorage.push(arrayCopy);
-            }
-            //togglePiece (take off piece)
-            boardStorage[i][j][k] = 0;
+    }
+    for (let i = lastPieceRow; i < board.rows().length; i++) {
+      for (let j = 0; j < board.rows()[i].length; j++) {
+        if (board.rows()[i][j] !== 1) {
+          board.togglePiece(i, j);
+          if (board.hasAnyRooksConflicts()) {
+            board.togglePiece(i, j);
+          } else {
+            let deepCopy = JSON.parse(JSON.stringify(board.rows()));
+            board.togglePiece(i, j);
+            helper(new Board(deepCopy));
           }
         }
       }
     }
-    boardStorage = tempBoardStorage;
-    // while # of rooks less than n
-    // while (helperFunctionRunCount < n) {
-    //   //and run helper recursively
-    //   helper();
-    // }
-    helperFunctionRunCount++;
   };
-  //call helper outside
-  while (helperFunctionRunCount < n) {
-    helper();
-  }
-  solutionCount = boardStorage.length;
-  // let uniqueSolutions = [];
-  // for (let i = 0; i < boardStorage.length; i++) {
-  //   if (!(uniqueSolutions.includes(JSON.stringify(boardStorage[i])))) {
-  //     uniqueSolutions.push(JSON.stringify(boardStorage[i]));
-  //   }
-  // }
-  // solutionCount = uniqueSolutions.length;
-  console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
+  helper(new Board({'n': n}));
   return solutionCount;
+
 };
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
